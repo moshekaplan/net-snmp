@@ -975,7 +975,10 @@ netsnmp_tlstcp_transport(const char *addr_string, int isserver)
     if (!isserver)
         t->flags |= NETSNMP_TLSBASE_IS_CLIENT;
 
-    tlsdata->addr_string = strdup(addr_string);
+    if (NULL == (tlsdata->addr_string = strdup(addr_string))) {
+        netsnmp_tlsbase_free_tlsdata(tlsdata);
+        return NULL;
+    }
 
     /* see if we can extract the remote hostname */
     if (!isserver && tlsdata && addr_string) {
