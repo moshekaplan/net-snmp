@@ -4276,9 +4276,14 @@ usm_store_users(int majorID, int minorID, void *serverarg, void *clientarg)
     return SNMPERR_SUCCESS;
 }
 
-/*
+/**
  * usm_parse_user(): reads in a line containing a saved user profile
  * and returns a pointer to a newly created struct usmUser. 
+ *
+ * @param[in]     line Line of text containing a saved user profile
+ *
+ * @return A pointer to the newly-created struct usmUser if
+ *   parsing succeeded; NULL if an error occurred.
  */
 static struct usmUser *
 usm_read_user(const char *line)
@@ -4292,8 +4297,19 @@ usm_read_user(const char *line)
 
     user->userStatus = atoi(line);
     line = skip_token_const(line);
+    if (line == NULL) {
+        DEBUGMSGTL(("usm", "Configuration line missing userStorageType\n"));
+        usm_free_user(user);
+        return NULL;
+    }
+
     user->userStorageType = atoi(line);
     line = skip_token_const(line);
+    if (line == NULL) {
+        DEBUGMSGTL(("usm", "Configuration line missing engineID\n"));
+        usm_free_user(user);
+        return NULL;
+    }
     line = read_config_read_octet_string_const(line, &user->engineID,
                                                &user->engineIDLen);
 
