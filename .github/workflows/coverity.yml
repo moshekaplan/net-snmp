@@ -5,11 +5,12 @@ name: Coverity Scan
 on:
   schedule:
     # Run daily
-    - cron: '0 0 * * *'
+    - cron: '0/5 * * * *'
   # Support manual execution
   workflow_dispatch:
 jobs:
   coverity:
+    if: github.repository == 'net-snmp/net-snmp'
     runs-on: ubuntu-latest
     steps:
     - name: Check github variables
